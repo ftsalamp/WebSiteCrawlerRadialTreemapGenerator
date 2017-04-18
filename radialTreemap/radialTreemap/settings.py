@@ -49,7 +49,9 @@ ROBOTSTXT_OBEY = True
 #SPIDER_MIDDLEWARES = {
 #    'radialTreemap.middlewares.RadialtreemapSpiderMiddleware': 543,
 #}
-
+SPIDER_MIDDLEWARES = {
+    'scrapy.contrib.spidermiddleware.referer.RefererMiddleware': True,
+}
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
