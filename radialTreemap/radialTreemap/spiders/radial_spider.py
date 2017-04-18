@@ -6,10 +6,10 @@ class RadialSpider(CrawlSpider):
     name = "radial"
     temp=[""]
     allowed_domains = [
-     'aetos.it.teithe.gr',
+     'iskme.org',
     ]
     start_urls = [
-     'http://aetos.it.teithe.gr/~adamidis/',
+     'http://iskme.org/',
     ]
 
     rules = (Rule(LinkExtractor(allow=allowed_domains), callback='parse_item', follow=True),)
@@ -19,5 +19,6 @@ class RadialSpider(CrawlSpider):
         yield {
             'Simhash': Simhash(quote.extract()).value,
             'url': response.url,
-            'depth' : response.meta['depth']
+            'depth' : response.meta['depth'],
+            'referer': str(response.request.headers['Referer'])
         }
