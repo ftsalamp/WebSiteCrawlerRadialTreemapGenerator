@@ -1,5 +1,20 @@
 var json;
 
+    readTextFile("radial.json", function(text){
+        var data = JSON.parse(text);
+        console.log(data.length);
+        json = data;
+        var parentUrl = json[0]['referer'];
+        var tree = {
+            "name" : parentUrl,
+            "children" : null
+        };
+        var finalTree = createTree(parentUrl,tree);
+	
+        putChildren(finalTree);
+        download('radial.json', JSON.stringify(finalTree));
+    });
+
 function getChildrenCount(tree){
 	return tree.children.length;
 }
@@ -10,7 +25,6 @@ function createTree(parentUrl, tree){
 	for(var i=0; i<json.length; i++){
 	var curLink = json[i];
 		if(curLink["referer"] == parentUrl){
-			//console.log("Found one for "+parentUrl);
 			children.push({
 				"name" : curLink["url"],
 				"children" : [],
@@ -21,23 +35,6 @@ function createTree(parentUrl, tree){
 	tree.children = children;
 	return tree;
 }
-	
-	
-readTextFile("./radial.json", function(text){
-	var data = JSON.parse(text);
-	console.log(data);
-	json = data;
-	var parentUrl = json[0]['referer'];
-	var tree = {
-		"name" : parentUrl,
-		"children" : null
-	};
-	var finalTree = createTree(parentUrl,tree);
-	var max_depth = 3;
-	
-	putChildren(finalTree);
-	download('final.json', JSON.stringify(finalTree));
-});
 
 function putChildren(finalTree){
 	for(var i=0; i<finalTree.children.length; i++){
@@ -45,7 +42,7 @@ function putChildren(finalTree){
     }
             
 	for(var i=0; i<finalTree.children.length; i++){
-		putChildren(finalTree.children[i]);
+        putChildren(finalTree.children[i]);
     }
 }
         
@@ -76,6 +73,3 @@ function readTextFile(file, callback) {
     }
 	rawFile.send(null);
 }
-
-
-        
