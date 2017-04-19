@@ -1,8 +1,8 @@
 var json;
 
     readTextFile("radial.json", function(text){
+        text = text.replace(/'/g, '"');
         var data = JSON.parse(text);
-        console.log(data.length);
         json = data;
         var parentUrl = json[0]['referer'];
         var tree = {
