@@ -16,14 +16,19 @@ form {
 }
 
 </style>
-<form>
-  <label><input type="radio" name="mode" value="size"> Size</label>
-  <label><input type="radio" name="mode" value="count" checked> Count</label>
-</form>
-
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
-
+function show(){
+foundEl=document.getElementsByTagName("svg");
+if(foundEl.length!=0){
+    var parent = document.getElementsByTagName("body")[0];
+    parent.removeChild(foundEl[0]);
+}
+var radioBut=document.getElementsByName("mode");
+if(radioBut[0].checked){
+    radioBut[0].checked=false;
+    radioBut[1].checked=true;
+}
 
 var width = screen.width/1.5,
     height = screen.height/1.5,
@@ -46,8 +51,16 @@ var arc = d3.svg.arc()
     .endAngle(function(d) { return d.x + d.dx; })
     .innerRadius(function(d) { return Math.sqrt(d.y); })
     .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
-
-d3.json("radial.json", function(error, root) {
+var files=["radial2012.json","radial2016.json","radial2017.json"];
+var fileValue=document.getElementById("slider").value;
+if(fileValue<30)
+    fileValue=0;
+else if(fileValue<60)
+    fileValue=1;
+else
+    fileValue=2;
+document.getElementById("fileName").innerHTML=files[fileValue];
+d3.json(files[fileValue], function(error, root) {
   if (error) throw error;
 
   var path = svg.datum(root).selectAll("path")
@@ -58,7 +71,9 @@ d3.json("radial.json", function(error, root) {
       .style("stroke", "#fff")
       .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
       .style("fill-rule", "evenodd")
-      .each(stash);
+      .each(stash)
+      .on("mouseover",function(d,i) {	document.getElementById("name").innerHTML = d.name; })
+      .on("mouseout", function(d) { document.getElementById("name").innerHTML = "<br/>"; });;
 
   d3.selectAll("input").on("change", function change() {
     var value = this.value === "count"
@@ -67,7 +82,7 @@ d3.json("radial.json", function(error, root) {
 
     path
         .data(partition.value(value).nodes)
-      .transition()
+        .transition()
         .duration(1500)
         .attrTween("d", arcTween);
   });
@@ -91,5 +106,22 @@ function arcTween(a) {
 }
 
 d3.select(self.frameElement).style("height", height + "px");
-
+}
 </script>
+<body onload="show()">
+    <h3 style="float: left;">Displaying file:</h3><h3 style="float: left;" id="fileName"></h3>
+    <form>
+        <label><input type="radio" name="mode" value="size"> Size</label>
+        <label><input type="radio" name="mode" value="count" checked> Count</label>
+    </form>
+    <p>
+        <br/>
+        <br/>
+    </p>
+    <input type='range' style="float: right;" id='slider' value="100" onchange="show()"/>
+    <p>
+        <br/>
+        <br/>
+    </p>
+    <div id="name"><br/></div>
+</body>
